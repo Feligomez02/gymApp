@@ -1,20 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { Button, Input, Card, CardHeader, Select, SelectItem } from "@heroui/react";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { Button, Card, CardHeader, Select, SelectItem } from "@heroui/react";
 
 export default function Home() {
-  const [gym, setGym] = useState<string>("");
+  const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null);
   const [gyms, setGyms] = useState<any[]>([]);
   const [selectedGym, setSelectedGym] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const { data: session } = useSession();
 
-  // Fetch user's location and find nearby gyms
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -23,7 +19,8 @@ export default function Home() {
             lat: position.coords.latitude,
             lon: position.coords.longitude,
           };
-          fetchNearbyGyms(coords.lat, coords.lon);
+          setLocation(coords);
+          simulateGyms(coords.lat, coords.lon);
         },
         (err) => {
           setError("Unable to retrieve location. Please allow location access.");
@@ -32,7 +29,7 @@ export default function Home() {
         {
           enableHighAccuracy: true,
           timeout: 5000,
-          maximumAge: 0,
+          maximumAge: 0
         }
       );
     } else {
@@ -40,8 +37,7 @@ export default function Home() {
     }
   }, []);
 
-  // Simulated API call for nearby gyms
-  const fetchNearbyGyms = (lat: number, lon: number) => {
+  const simulateGyms = (lat: number, lon: number) => {
     const fakeGyms = [
       { id: "iron_paradise", name: "Iron Paradise Gym" },
       { id: "titan_fitness", name: "Titan Fitness Center" },
@@ -60,45 +56,45 @@ export default function Home() {
   };
 
   return (
-    
+
       <div className="flex flex-col items-center justify-center flex-1 text-center p-6">
-        <Card className="w-full max-w-lg shadow-xl p-6">
+        <Card className="w-full max-w-lg shadow-xl p-6 text-center">
           <CardHeader className="text-3xl font-bold text-white-900 mb-4">
             Find Your Gym Partner
           </CardHeader>
-          <p className="text-gray-600 mb-6">Select your nearby gym and connect with people working out today!</p>
+          <p className="text-gray-600 mb-6">
+            Select your nearby gym and start connecting with partners.
+          </p>
 
           {error ? (
             <p className="text-red-500">{error}</p>
-          ) : gyms.length > 0 ? (
-            <form onSubmit={handleSearch} className="space-y-4">
-              <Select
-                value={selectedGym ?? ""}
-                onChange={(e) => setSelectedGym(e.target.value)}
-                placeholder="Select a nearby gym"
-                disabled={gyms.length === 0}
-              >
-                {gyms.map((gym) => (
-                  <SelectItem key={gym.id} value={gym.id}>
-                    {gym.name}
-                  </SelectItem>
-                ))}
-              </Select>
-
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={!selectedGym}>
-                Search
-              </Button>
-            </form>
+          ) : location ? (
+            <p className="text-white mb-4">Your Location: {location.lat}, {location.lon}</p>
           ) : (
-            <p className="text-gray-400">Fetching nearby gyms...</p>
+            <p className="text-gray-400">Fetching location...</p>
           )}
 
-          <div className="mt-6">
-            <Link href="/register" className="text-blue-600 hover:underline">
-              Sign Up & Connect Now
-            </Link>
-          </div>
+          <form onSubmit={handleSearch} className="space-y-4">
+            <Select
+              value={selectedGym ?? ""}
+              onChange={(e) => setSelectedGym(e.target.value)}
+              placeholder="Select a nearby gym"
+              disabled={gyms.length === 0}
+            >
+              {gyms.map((gym) => (
+                <SelectItem key={gym.id} value={gym.id}>
+                  {gym.name}
+                </SelectItem>
+              ))}
+            </Select>
+
+            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={!selectedGym}>
+              Search
+            </Button>
+          </form>
         </Card>
       </div>
+
   );
 }
+
