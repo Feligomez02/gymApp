@@ -1,15 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { Button, Card, CardHeader, Select, SelectItem } from "@heroui/react";
+import { auth } from "@/lib/auth";
 
-export default function Home() {
+export default async function Home() {
   const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null);
   const [gyms, setGyms] = useState<any[]>([]);
   const [selectedGym, setSelectedGym] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const session = await auth();
+  if (!session) {
+    redirect("/login");}
 
   useEffect(() => {
     if (navigator.geolocation) {

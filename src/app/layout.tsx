@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
-import { getServerSession } from "next-auth";
+import { auth } from "../lib/auth";
 import Link from "next/link";
 import Logout from "./logout"; // If you have a custom Logout component, keep it here
 import { signOut } from "next-auth/react";
@@ -27,7 +27,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession();
+  const session = await auth();
   
   return (
     <html lang="en" className="dark">

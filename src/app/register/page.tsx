@@ -1,9 +1,10 @@
-import { getServerSession } from "next-auth";
+
+import { auth } from "../../lib/auth";
 import Form from "./form";
 import { redirect } from "next/navigation";
 
 export default async function Register() {
-  const session = await getServerSession();
+  const session = await auth();
   if (session) {
     redirect("/");
   }
@@ -15,7 +16,6 @@ export default async function Register() {
         
         {/* Form Component */}
         <Form />
-
         {/* Link to Login page */}
         <div className="text-center mt-4">
           <p className="text-gray-600">
