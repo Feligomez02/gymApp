@@ -50,7 +50,7 @@ export default function Dashboard() {
 
       <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
         <Card className="w-full max-w-2xl shadow-xl p-6 text-center">
-          <CardHeader className="text-3xl font-bold text-white mb-4">Workout Dashboard</CardHeader>
+          <CardHeader className="text-3xl font-bold text-white mb-4">Encontra tu Compañero</CardHeader>
 
           {/* Gym Selection */}
           <Select
@@ -73,7 +73,7 @@ export default function Dashboard() {
               onChange={(e) => setTimeFilter(e.target.value)}
               className="w-1/2"
             >
-              <SelectItem value="All">All Times</SelectItem>
+              <SelectItem value="All">Cualquier Horario</SelectItem>
               <SelectItem value="5:00 PM">5:00 PM</SelectItem>
               <SelectItem value="6:00 PM">6:00 PM</SelectItem>
               <SelectItem value="6:30 PM">6:30 PM</SelectItem>
@@ -87,10 +87,10 @@ export default function Dashboard() {
               onChange={(e) => setLevelFilter(e.target.value)}
               className="w-1/2"
             >
-              <SelectItem value="All">All Levels</SelectItem>
-              <SelectItem value="Beginner">Beginner</SelectItem>
-              <SelectItem value="Intermediate">Intermediate</SelectItem>
-              <SelectItem value="Advanced">Advanced</SelectItem>
+              <SelectItem value="All">Cualquier Nivel</SelectItem>
+              <SelectItem value="Beginner">Principiante</SelectItem>
+              <SelectItem value="Intermediate">Intermedio</SelectItem>
+              <SelectItem value="Advanced">Avanzado</SelectItem>
             </Select>
           </div>
 
@@ -103,7 +103,7 @@ export default function Dashboard() {
                 </li>
               ))
             ) : (
-              <p className="text-gray-400">No workout partners found.</p>
+              <p className="text-gray-400">No encontramos ninguna persona disponible con esos filtros</p>
             )}
           </ul>
         </Card>

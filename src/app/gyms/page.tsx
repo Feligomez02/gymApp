@@ -64,7 +64,7 @@ export default async function Home() {
       <div className="flex flex-col items-center justify-center flex-1 text-center p-6">
         <Card className="w-full max-w-lg shadow-xl p-6 text-center">
           <CardHeader className="text-3xl font-bold text-white-900 mb-4">
-            Find Your Gym Partner
+            Encontra tu Compañero de Gimnasio!
           </CardHeader>
           <p className="text-gray-600 mb-6">
             Select your nearby gym and start connecting with partners.

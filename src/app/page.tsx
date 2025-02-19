@@ -64,10 +64,10 @@ export default function Home() {
     <div className="flex flex-col items-center justify-center flex-1 text-center p-6">
       <Card className="w-full max-w-lg shadow-xl p-6">
         <CardHeader className="text-3xl font-bold text-white-900 mb-4">
-          Find Your Gym Partner
+        Encontra tu Gym Bro
         </CardHeader>
         <p className="text-gray-600 mb-6">
-          Select your nearby gym and connect with people working out today!
+          Busca tu gimnasio y encontra a tu compañero ideal!
         </p>
 
         {error ? (
@@ -77,7 +77,7 @@ export default function Home() {
             <Select
               value={selectedGym ?? ""}
               onChange={(e) => setSelectedGym(e.target.value)}
-              placeholder="Select a nearby gym"
+              placeholder="Selecciona tu gimnasio"
               disabled={gyms.length === 0}
             >
               {gyms.map((gym) => (
@@ -92,7 +92,7 @@ export default function Home() {
               className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-md py-2 px-4"
               disabled={!selectedGym}
             >
-              Search
+              Buscar
             </ClientButton>
           </form>
         ) : (
@@ -101,7 +101,7 @@ export default function Home() {
 
         <div className="mt-6">
           <Link href="/signup" className="text-blue-600 hover:underline">
-            Sign Up & Connect Now
+            Registrate y Conecta!
           </Link>
         </div>
       </Card>
