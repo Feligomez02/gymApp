@@ -1,3 +1,7 @@
-export { auth as middleware} from './src/lib/auth';
+import { auth } from "./src/lib/auth";
 
-export const config = {matcher: ['/gyms']};
+export { auth as middleware };
+
+export const config = {
+  matcher: ["/gyms", "/dashboard"], // Add other protected routes
+};

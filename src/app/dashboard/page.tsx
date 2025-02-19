@@ -46,19 +46,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-r from-blue-500 to-indigo-600">
-      {/* NAVBAR */}
-      <nav className="bg-white shadow-md w-full">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="text-blue-600 font-bold text-2xl">Gym Finder</div>
-            <div className="flex space-x-6">
-              <Link href="/" className="text-gray-900 hover:text-blue-600 text-lg">Home</Link>
-              <Link href="/gyms" className="text-gray-900 hover:text-blue-600 text-lg">Gyms</Link>
-              <Link href="/register" className="text-gray-900 hover:text-blue-600 text-lg">Sign Up</Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+    
 
       <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
         <Card className="w-full max-w-2xl shadow-xl p-6 text-center">

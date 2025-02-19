@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Button, Input, Card, CardHeader, Select, SelectItem } from "@heroui/react";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { Input, Card, CardHeader, Select, SelectItem } from "@heroui/react";
+import { useSession } from "next-auth/react";
+import { ClientButton } from "@/components/clientButton";
 
 export default function Home() {
   const [gym, setGym] = useState<string>("");
@@ -60,45 +61,50 @@ export default function Home() {
   };
 
   return (
-    
-      <div className="flex flex-col items-center justify-center flex-1 text-center p-6">
-        <Card className="w-full max-w-lg shadow-xl p-6">
-          <CardHeader className="text-3xl font-bold text-white-900 mb-4">
-            Find Your Gym Partner
-          </CardHeader>
-          <p className="text-gray-600 mb-6">Select your nearby gym and connect with people working out today!</p>
+    <div className="flex flex-col items-center justify-center flex-1 text-center p-6">
+      <Card className="w-full max-w-lg shadow-xl p-6">
+        <CardHeader className="text-3xl font-bold text-white-900 mb-4">
+          Find Your Gym Partner
+        </CardHeader>
+        <p className="text-gray-600 mb-6">
+          Select your nearby gym and connect with people working out today!
+        </p>
 
-          {error ? (
-            <p className="text-red-500">{error}</p>
-          ) : gyms.length > 0 ? (
-            <form onSubmit={handleSearch} className="space-y-4">
-              <Select
-                value={selectedGym ?? ""}
-                onChange={(e) => setSelectedGym(e.target.value)}
-                placeholder="Select a nearby gym"
-                disabled={gyms.length === 0}
-              >
-                {gyms.map((gym) => (
-                  <SelectItem key={gym.id} value={gym.id}>
-                    {gym.name}
-                  </SelectItem>
-                ))}
-              </Select>
+        {error ? (
+          <p className="text-red-500">{error}</p>
+        ) : gyms.length > 0 ? (
+          <form onSubmit={handleSearch} className="space-y-4">
+            <Select
+              value={selectedGym ?? ""}
+              onChange={(e) => setSelectedGym(e.target.value)}
+              placeholder="Select a nearby gym"
+              disabled={gyms.length === 0}
+            >
+              {gyms.map((gym) => (
+                <SelectItem key={gym.id} value={gym.id}>
+                  {gym.name}
+                </SelectItem>
+              ))}
+            </Select>
 
-              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={!selectedGym}>
-                Search
-              </Button>
-            </form>
-          ) : (
-            <p className="text-gray-400">Fetching nearby gyms...</p>
-          )}
+            <ClientButton
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-md py-2 px-4"
+              disabled={!selectedGym}
+            >
+              Search
+            </ClientButton>
+          </form>
+        ) : (
+          <p className="text-gray-400">Fetching nearby gyms...</p>
+        )}
 
-          <div className="mt-6">
-            <Link href="/register" className="text-blue-600 hover:underline">
-              Sign Up & Connect Now
-            </Link>
-          </div>
-        </Card>
-      </div>
+        <div className="mt-6">
+          <Link href="/signup" className="text-blue-600 hover:underline">
+            Sign Up & Connect Now
+          </Link>
+        </div>
+      </Card>
+    </div>
   );
 }
