@@ -4,13 +4,12 @@ import { signIn } from "next-auth/react";
 import { useState, FormEvent } from "react";
 import { Input, Button } from "@heroui/react";
 import { useRouter } from "next/navigation";
-import Form from "./form";
 
 export default function SignUpForm() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -25,10 +24,7 @@ export default function SignUpForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
@@ -37,7 +33,7 @@ export default function SignUpForm() {
         throw new Error(data.error || "Failed to sign up");
       }
 
-      // If signup successful, sign in the user automatically
+      // Sign in after successful signup
       const result = await signIn("credentials", {
         redirect: false,
         email,
@@ -47,12 +43,15 @@ export default function SignUpForm() {
       if (result?.error) {
         setError(result.error);
       } else {
-        router.push("/dashboard"); // Redirect to dashboard after successful signup
+        // Force a router refresh to update the session
+        router.refresh();
+        router.push("/dashboard");
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">

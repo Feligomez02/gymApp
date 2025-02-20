@@ -1,19 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Button, Card, CardHeader, Select, SelectItem } from "@heroui/react";
-import { auth } from "@/lib/auth";
+import { useSession } from "next-auth/react";
 
-export default async function Home() {
+export default function Home() {
+  const { data: session, status } = useSession();
   const [location, setLocation] = useState<{ lat: number; lon: number } | null>(null);
   const [gyms, setGyms] = useState<any[]>([]);
   const [selectedGym, setSelectedGym] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const session = await auth();
-  if (!session) {
-    redirect("/login");}
+
+  useEffect(() => {
+    if (status === "loading") return; // Do nothing while loading
+    if (!session) {
+      router.push("/signin");
+    }
+  }, [session, status, router]);
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -33,7 +38,7 @@ export default async function Home() {
         {
           enableHighAccuracy: true,
           timeout: 5000,
-          maximumAge: 0
+          maximumAge: 0,
         }
       );
     } else {
@@ -59,46 +64,53 @@ export default async function Home() {
     }
   };
 
+  if (status === "loading") {
+    return <p>Loading...</p>;
+  }
+
   return (
+    <div className="flex flex-col items-center justify-center flex-1 text-center p-6">
+      <Card className="w-full max-w-lg shadow-xl p-6 text-center">
+        <CardHeader className="text-3xl font-bold text-white-900 mb-4">
+          Encontra tu Compañero de Gimnasio!
+        </CardHeader>
+        <p className="text-gray-600 mb-6">
+          Select your nearby gym and start connecting with partners.
+        </p>
 
-      <div className="flex flex-col items-center justify-center flex-1 text-center p-6">
-        <Card className="w-full max-w-lg shadow-xl p-6 text-center">
-          <CardHeader className="text-3xl font-bold text-white-900 mb-4">
-            Encontra tu Compañero de Gimnasio!
-          </CardHeader>
-          <p className="text-gray-600 mb-6">
-            Select your nearby gym and start connecting with partners.
+        {error ? (
+          <p className="text-red-500">{error}</p>
+        ) : location ? (
+          <p className="text-white mb-4">
+            Your Location: {location.lat}, {location.lon}
           </p>
+        ) : (
+          <p className="text-gray-400">Fetching location...</p>
+        )}
 
-          {error ? (
-            <p className="text-red-500">{error}</p>
-          ) : location ? (
-            <p className="text-white mb-4">Your Location: {location.lat}, {location.lon}</p>
-          ) : (
-            <p className="text-gray-400">Fetching location...</p>
-          )}
+        <form onSubmit={handleSearch} className="space-y-4">
+          <Select
+            value={selectedGym ?? ""}
+            onChange={(e) => setSelectedGym(e.target.value)}
+            placeholder="Select a nearby gym"
+            disabled={gyms.length === 0}
+          >
+            {gyms.map((gym) => (
+              <SelectItem key={gym.id} value={gym.id}>
+                {gym.name}
+              </SelectItem>
+            ))}
+          </Select>
 
-          <form onSubmit={handleSearch} className="space-y-4">
-            <Select
-              value={selectedGym ?? ""}
-              onChange={(e) => setSelectedGym(e.target.value)}
-              placeholder="Select a nearby gym"
-              disabled={gyms.length === 0}
-            >
-              {gyms.map((gym) => (
-                <SelectItem key={gym.id} value={gym.id}>
-                  {gym.name}
-                </SelectItem>
-              ))}
-            </Select>
-
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white" disabled={!selectedGym}>
-              Search
-            </Button>
-          </form>
-        </Card>
-      </div>
-
+          <Button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            disabled={!selectedGym}
+          >
+            Search
+          </Button>
+        </form>
+      </Card>
+    </div>
   );
 }
-
