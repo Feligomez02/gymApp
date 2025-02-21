@@ -1,77 +1,87 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Button, Card, CardHeader, Select, SelectItem } from "@heroui/react";
 
 export default function Dashboard() {
-  const [selectedGym, setSelectedGym] = useState<string>("");
+  const searchParams = useSearchParams();
+  const gymFromUrl = searchParams.get("gym") ?? "";
+  const [selectedGym, setSelectedGym] = useState<string>(gymFromUrl);
   const [users, setUsers] = useState<{ id: number; name: string; time: string; level: string }[]>([]);
-  const [gyms, setGyms] = useState<string[]>([]);
   const [timeFilter, setTimeFilter] = useState<string>("All");
   const [levelFilter, setLevelFilter] = useState<string>("All");
 
-  useEffect(() => {
-    // Simulated gym list (this should come from a backend)
-    setGyms(["Iron Paradise Gym", "Titan Fitness Center", "Peak Performance Gym"]);
-    setSelectedGym("Iron Paradise Gym");
-  }, []);
+  const handleTimeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    console.log('Setting time filter to:', e.target.value);
+    setTimeFilter(e.target.value);
+  };
+
+  const handleLevelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    console.log('Setting level filter to:', e.target.value);
+    setLevelFilter(e.target.value);
+  };
 
   useEffect(() => {
-    if (selectedGym) {
-      // Simulated users based on selected gym
-      const gymUsers: { [key: string]: { id: number; name: string; time: string; level: string }[] } = {
-        "Iron Paradise Gym": [
-          { id: 1, name: "John Doe", time: "6:00 PM", level: "Intermediate" },
-          { id: 2, name: "Jane Smith", time: "7:30 PM", level: "Beginner" },
-        ],
-        "Titan Fitness Center": [
-          { id: 3, name: "Alice Johnson", time: "5:00 PM", level: "Advanced" },
-          { id: 4, name: "Bob Brown", time: "8:00 PM", level: "Intermediate" },
-        ],
-        "Peak Performance Gym": [
-          { id: 5, name: "Charlie Davis", time: "6:30 PM", level: "Beginner" },
-        ],
-      };
-      setUsers(gymUsers[selectedGym] || []);
+    if (gymFromUrl) {
+      setSelectedGym(gymFromUrl);
     }
+  }, [gymFromUrl]);
+
+  useEffect(() => {
+    const gymUsers: { [key: string]: { id: number; name: string; time: string; level: string }[] } = {
+      "Iron Paradise Gym": [
+        { id: 1, name: "John Doe", time: "6:00 PM", level: "Intermediate" },
+        { id: 2, name: "Jane Smith", time: "7:30 PM", level: "Beginner" },
+      ],
+      "Titan Fitness Center": [
+        { id: 3, name: "Alice Johnson", time: "5:00 PM", level: "Advanced" },
+        { id: 4, name: "Bob Brown", time: "8:00 PM", level: "Intermediate" },
+      ],
+      "Peak Performance Gym": [
+        { id: 5, name: "Charlie Davis", time: "6:30 PM", level: "Beginner" },
+      ],
+    };
+    setUsers(gymUsers[selectedGym] || []);
   }, [selectedGym]);
 
-  // Filter users based on selected time and level
+  // Filter logic
   const filteredUsers = users.filter((user) => {
-    const matchesTime = timeFilter === "All" || user.time === timeFilter;
-    const matchesLevel = levelFilter === "All" || user.level === levelFilter;
-    return matchesTime && matchesLevel;
+    const timeMatches = timeFilter === "All" || user.time === timeFilter;
+    const levelMatches = levelFilter === "All" || user.level === levelFilter;
+    
+    console.log(`Filtering user ${user.name}:`, {
+      time: user.time,
+      timeFilter,
+      timeMatches,
+      level: user.level,
+      levelFilter,
+      levelMatches
+    });
+    
+    return timeMatches && levelMatches;
   });
 
-  return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-r from-blue-500 to-indigo-600">
-    
+  useEffect(() => {
+    console.log('Users before filtering:', users);
+    console.log('Current filters:', { timeFilter, levelFilter });
+    console.log('Filtered users:', filteredUsers);
+  }, [users, timeFilter, levelFilter, filteredUsers]);
 
-      <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
-        <Card className="w-full max-w-2xl shadow-xl p-6 text-center">
-          <CardHeader className="text-3xl font-bold text-white mb-4">Encontra tu Compañero</CardHeader>
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
+        <Card className="w-full max-w-lg shadow-xl p-6 text-center">
+          <CardHeader className="text-3xl font-bold text-white-900 mb-4">
+            {selectedGym ? `Compañeros en ${selectedGym}` : "Selecciona un gimnasio"}
+          </CardHeader>
 
-          {/* Gym Selection */}
-          <Select
-            value={selectedGym}
-            onChange={(e) => setSelectedGym(e.target.value)}
-            className="w-full mb-4"
-          >
-            {gyms.map((gym, index) => (
-              <SelectItem key={index} value={gym}>
-                {gym}
-              </SelectItem>
-            ))}
-          </Select>
-
-          {/* Filters */}
           <div className="flex space-x-4 justify-center mb-4">
-            {/* Time Filter */}
             <Select
               value={timeFilter}
-              onChange={(e) => setTimeFilter(e.target.value)}
+              onChange={handleTimeChange}
               className="w-1/2"
+              aria-label="Select time"
             >
               <SelectItem value="All">Cualquier Horario</SelectItem>
               <SelectItem value="5:00 PM">5:00 PM</SelectItem>
@@ -81,11 +91,11 @@ export default function Dashboard() {
               <SelectItem value="8:00 PM">8:00 PM</SelectItem>
             </Select>
 
-            {/* Level Filter */}
             <Select
               value={levelFilter}
-              onChange={(e) => setLevelFilter(e.target.value)}
+              onChange={handleLevelChange}
               className="w-1/2"
+              aria-label="Select level"
             >
               <SelectItem value="All">Cualquier Nivel</SelectItem>
               <SelectItem value="Beginner">Principiante</SelectItem>
@@ -94,7 +104,9 @@ export default function Dashboard() {
             </Select>
           </div>
 
-          {/* Workout Partners List */}
+  
+
+          {/* Lista de Usuarios */}
           <ul className="mt-4 text-black">
             {filteredUsers.length > 0 ? (
               filteredUsers.map((user) => (
